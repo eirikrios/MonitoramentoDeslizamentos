@@ -1,0 +1,190 @@
+import { Avatar, Card, Text } from '@rneui/themed';
+import React from 'react';
+import { ViewStyle } from 'react-native';
+import styled from 'styled-components/native';
+import theme from '../styles/theme';
+
+interface AppointmentCardProps {
+  doctorName: string;
+  date: string;
+  time: string;
+  specialty: string;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  soilMoisture: string;
+  soilSlope: string;
+  onPress?: () => void;
+  style?: ViewStyle;
+}
+
+const AppointmentCard: React.FC<AppointmentCardProps> = ({
+  doctorName,
+  date,
+  time,
+  specialty,
+  status,
+  soilMoisture,
+  soilSlope,
+  onPress,
+  style,
+}) => {
+  const getStatusColor = () => {
+    switch (status) {
+      case 'confirmed':
+        return theme.colors.success;
+      case 'cancelled':
+        return theme.colors.error;
+      default:
+        return theme.colors.primary;
+    }
+  };
+
+  return (
+    <Card containerStyle={[styles.card, style]}>
+      <DoctorInfo>
+        <Avatar
+          size="medium"
+          rounded
+          source={{ uri: `https://randomuser.me/api/portraits/men/${Math.floor(Math.random() * 10)}.jpg` }}
+          containerStyle={styles.avatar}
+        />
+        <TextContainer>
+          <DoctorName>{doctorName}</DoctorName>
+          <Specialty>{specialty}</Specialty>
+        </TextContainer>
+      </DoctorInfo>
+
+      <AppointmentInfo>
+        <InfoRow>
+          <InfoLabel>Data:</InfoLabel>
+          <InfoValue>{date}</InfoValue>
+        </InfoRow>
+        <InfoRow>
+          <InfoLabel>Horário:</InfoLabel>
+          <InfoValue>{time}</InfoValue>
+        </InfoRow>
+      </AppointmentInfo>
+
+      <StatusContainer>
+        <StatusDot color={getStatusColor()} />
+        <Text style={{ color: getStatusColor() }}>
+          {status === 'confirmed' ? 'Confirmada' : status === 'cancelled' ? 'Cancelada' : 'Pendente'}
+        </Text>
+      </StatusContainer>
+      <SoilInfoContainer backgroundColor={getSoilColor(soilMoisture, soilSlope)}>
+        <SoilInfoText>Umidade: {soilMoisture}</SoilInfoText>
+        <SoilInfoText>Inclinação: {soilSlope}</SoilInfoText>
+      </SoilInfoContainer>
+
+    </Card>
+  );
+};
+
+const styles = {
+  card: {
+    borderRadius: 10,
+    marginHorizontal: 0,
+    marginVertical: 8,
+    padding: 15,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  avatar: {
+    backgroundColor: theme.colors.primary,
+  },
+};
+const getSoilColor = (soilMoisture: string, soilSlope: string) => {
+  if (soilMoisture === 'Encharcado' || soilSlope === 'Íngreme') {
+    return theme.colors.error + '20'; // Cor de alerta para condições adversas
+  } else if (soilMoisture === 'Úmido' && soilSlope === 'Leve') {
+    return theme.colors.success + '20'; // Cor positiva para boas condições
+  } else {
+    return theme.colors.warning + '20'; // Cor intermediária
+  }
+};    
+
+const SoilInfoContainer = styled.View<{ backgroundColor: string }>`
+    background-color: ${(props) => props.backgroundColor};
+    padding: 8px;
+    border-radius: 8px;
+    margin-top: 8px;
+    align-items: center;
+`;
+
+const SoilInfoText = styled.Text`
+    font-size: 14px;
+    font-weight: bold;
+    color: ${theme.colors.textOnPrimary};
+`;
+
+const CardContent = styled.View`
+  padding: 10px;
+`;
+
+const DoctorInfo = styled.View`
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 15px;
+`;
+
+const TextContainer = styled.View`
+  margin-left: 15px;
+`;
+
+const DoctorName = styled.Text`
+  font-size: 18px;
+  font-weight: bold;
+  color: ${theme.colors.text};
+`;
+
+const Specialty = styled.Text`
+  font-size: 14px;
+  color: ${theme.colors.text};
+  opacity: 0.7;
+`;
+
+const AppointmentInfo = styled.View`
+  margin-bottom: 15px;
+`;
+
+const InfoRow = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  marginBottom: 5px;
+`;
+
+const InfoLabel = styled.Text`
+  font-size: 14px;
+  color: ${theme.colors.text};
+  opacity: 0.7;
+`;
+
+const InfoValue = styled.Text`
+  font-size: 14px;
+  color: ${theme.colors.text};
+  font-weight: 500;
+`;
+
+const StatusContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  margin-top: 10px;
+`;
+
+const StatusDot = styled.View<{ color: string }>`
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: ${(props: { color: string }) => props.color};
+  margin-right: 8px;
+`;
+
+const StatusText = styled.Text<{ color: string }>`
+  fontSize: 14;
+  color: ${(props: { color: string }) => props.color};
+  fontWeight: 500;
+`;
+
+export default AppointmentCard; 
